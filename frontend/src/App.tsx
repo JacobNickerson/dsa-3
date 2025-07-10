@@ -17,7 +17,7 @@ function App() {
         <div className="start screen">
           <h1>Street Pathfinding Visualizer</h1>
           <h2>find your shortest path...</h2>
-          <button onClick={hideStartScreen}>start</button>
+          <button onClick={hideStartScreen} style={{marginTop: '40px'}}>start</button>
         </div>
       ) : (
         <div className="main screen">
