@@ -63,6 +63,21 @@ button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
 }
 
+.fade-transition-enter {
+  opacity: 0;
+}
+.fade-transition-enter-active {
+  opacity: 1;
+  transition: opacity 400ms ease-in-out;
+}
+.fade-transition-exit {
+  opacity: 1;
+}
+.fade-transition-exit-active {
+  opacity: 0;
+  transition: opacity 400ms ease-in-out;
+}
+
 @media (prefers-color-scheme: light) {
   :root {
     color: #213547;
