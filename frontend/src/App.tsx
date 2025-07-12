@@ -1,44 +1,99 @@
 import { useState, useRef, useEffect } from 'react'
 import { CSSTransition } from 'react-transition-group'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
+import { Stack, Fab, Select, FormControl, TextField, InputLabel, MenuItem, IconButton, Drawer } from '@mui/material'
+import NavigationIcon from '@mui/icons-material/Navigation'
+import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
+import Map from 'react-map-gl/maplibre'
+import 'maplibre-gl/dist/maplibre-gl.css'
 import './App.css'
 
 function StartScreen({ nodeRef, showStartScreen, handleClick } : { nodeRef:any, showStartScreen:any, handleClick:any }) {
   return (
     <CSSTransition nodeRef={nodeRef} in={showStartScreen} timeout={400} classNames="fade-transition" unmountOnExit>
-      <div ref={nodeRef}>
+      <div className="start-screen" ref={nodeRef}>
         <h1>Street Pathfinding Visualizer</h1>
-        <h2>find your shortest path...</h2>
+        <h2 style={{marginTop: '10px'}}>find your shortest path...</h2>
         <button onClick={handleClick} style={{marginTop: '40px'}}>start</button>
       </div>
     </CSSTransition>
   )
 }
 
-function MainScreen({ nodeRef, count, setCount } : { nodeRef:any, count:number, setCount:any }) {
+function MainScreen() {
+  const [algorithm, setAlgorithm] = useState('');
+  const [open, setOpen] = useState(false);
+
+  const handleChange = (event:any) => {
+    setAlgorithm(event.target.value);
+  };
+
+  const handleDrawerOpen = () => {
+    setOpen(true);
+  }
+  const handleDrawerClose = () => {
+    setOpen(false);
+  }
+
+  const submit = (formData:any) => {
+    const startLocation = formData.get("startLocation")
+    alert(`${startLocation}`)
+    handleDrawerClose()
+  }
+
   return (
-    <div ref={nodeRef}>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount(count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+    <div style={{width: '100vw', height: '100vh'}}>
+      <Map
+        initialViewState={{
+        longitude: -122.4,
+        latitude: 37.8,
+        zoom: 14
+      }}
+        style={{width: '100%', height: '100%'}}
+        mapStyle="https://tiles.openfreemap.org/styles/liberty"
+      />
+      <Fab onClick={handleDrawerOpen} variant="extended" sx={{position: 'absolute', top: 16, left: 16}}>
+        <NavigationIcon sx={{ mr: 1 }}/>
+        Search Path
+      </Fab>
+      <Drawer
+        sx={{
+          width: '20%'
+        }}
+        variant="persistent"
+        anchor="left"
+        open={open}
+      >
+        <IconButton onClick={handleDrawerClose}>
+          <ChevronLeftIcon />
+        </IconButton>
+        <form action={submit}>
+          <Stack spacing={'5vh'} sx={{margin: '40px', maxWidth: '300px'}}>
+            <div className="text-inputs-container">
+              <TextField name="startLocation" label="Starting Location" variant="outlined" fullWidth />
+              <TextField name="endLocation" label="Destination" variant="outlined" margin="normal" fullWidth />
+            </div>
+            <FormControl sx={{ m: 1, minWidth: 150 }}>
+              <InputLabel id="select-algorithm-label">Select Algorithm</InputLabel>
+              <Select
+                labelId="select-algorithm-label"
+                id="select-algorithm"
+                value={algorithm}
+                label="Select Algorithm"
+                onChange={handleChange}
+              >
+                <MenuItem value={'A*-Search'}>A* Search</MenuItem>
+                <MenuItem value={'Breadth-First'}>Breadth-First Search</MenuItem>
+                <MenuItem value={'Depth-First'}>Depth-First Search</MenuItem>
+                <MenuItem value={'Dijkstra'}>Dijkstra's Algorithm</MenuItem>
+              </Select>
+            </FormControl>
+            <Fab type="submit" onClick={submit} variant="extended">
+              <NavigationIcon sx={{ mr: 1 }} />
+              Navigate
+            </Fab>
+          </Stack>
+        </form>
+      </Drawer>
     </div>
   )
 }
@@ -47,7 +102,6 @@ function App() {
   const [showStartScreen, setStartScreen] = useState(false)
   const [showMainScreen, setMainScreen] = useState(false)
   const nodeRef = useRef(null)
-  const [count, setCount] = useState(0) // delete this later? it's for the placeholder counter on the main screen
 
   useEffect(() => {
     setTimeout(() => setStartScreen(true), 800); // executes once to setup start screen (allows enter transition to play)
@@ -66,11 +120,7 @@ function App() {
         handleClick = {handleClick}
       />
       {showMainScreen &&
-        <MainScreen
-          nodeRef = {nodeRef}
-          count = {count}
-          setCount = {setCount}
-        />
+        <MainScreen />
       }
     </>
   )
