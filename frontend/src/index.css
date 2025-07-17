@@ -3,7 +3,7 @@
   line-height: 1.5;
   font-weight: 400;
 
-  color-scheme: light dark;
+  color-scheme: light;
   color: #44515c;
   background-color: #ffffff;
 
@@ -24,10 +24,9 @@ a:hover {
 
 body {
   margin: 0;
-  display: flex;
-  place-items: center;
-  min-width: 320px;
+  min-width: 900px;
   min-height: 100vh;
+  overflow: hidden;
 }
 
 h1 {
@@ -47,7 +46,6 @@ button {
   border: 2px solid transparent;
   border-color: #a4b0bb;
   color: #a4b0bb;
-  padding: 0.6em 1.2em;
   font-size: 1.5em;
   font-weight: 500;
   font-family: inherit;
@@ -63,22 +61,21 @@ button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
 }
 
-.fade-transition-enter {
-  opacity: 0;
-}
-.fade-transition-enter-active {
-  opacity: 1;
-  transition: opacity 400ms ease-in-out;
-}
-.fade-transition-exit {
-  opacity: 1;
-}
-.fade-transition-exit-active {
-  opacity: 0;
-  transition: opacity 400ms ease-in-out;
+input[type="radio"] {
+  margin-top: 10px;
 }
 
-@media (prefers-color-scheme: light) {
+button[type="submit"] {
+  margin-top: 20px;
+}
+
+form {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
+}
+
+/* @media (prefers-color-scheme: light) {
   :root {
     color: #213547;
     background-color: #ffffff;
@@ -89,4 +86,4 @@ button:focus-visible {
   button {
     background-color: #f9f9f9;
   }
-}
+} */
