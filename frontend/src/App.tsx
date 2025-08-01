@@ -1,63 +1,87 @@
-import { useState, useRef, useEffect } from 'react'
-import { CSSTransition } from 'react-transition-group'
-import { Stack, Fab, Select, FormControl, TextField, InputLabel, MenuItem, IconButton, Drawer } from '@mui/material'
-import NavigationIcon from '@mui/icons-material/Navigation'
-import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
-import Map from 'react-map-gl/maplibre'
-import 'maplibre-gl/dist/maplibre-gl.css'
-import './App.css'
+import { useState, useRef, useEffect } from "react";
+import { CSSTransition } from "react-transition-group";
+import {
+  Stack,
+  Fab,
+  Select,
+  FormControl,
+  TextField,
+  InputLabel,
+  MenuItem,
+  IconButton,
+  Drawer,
+} from "@mui/material";
+import NavigationIcon from "@mui/icons-material/Navigation";
+import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
+//import Map from "react-map-gl/maplibre";
+import "maplibre-gl/dist/maplibre-gl.css";
+import "./App.css";
+import MapOpen from "./components/MapOpen";
 
-function StartScreen({ nodeRef, showStartScreen, handleClick } : { nodeRef:any, showStartScreen:any, handleClick:any }) {
+function StartScreen({
+  nodeRef,
+  showStartScreen,
+  handleClick,
+}: {
+  nodeRef: any;
+  showStartScreen: any;
+  handleClick: any;
+}) {
   return (
-    <CSSTransition nodeRef={nodeRef} in={showStartScreen} timeout={400} classNames="fade-transition" unmountOnExit>
+    <CSSTransition
+      nodeRef={nodeRef}
+      in={showStartScreen}
+      timeout={400}
+      classNames="fade-transition"
+      unmountOnExit
+    >
       <div className="start-screen" ref={nodeRef}>
         <h1>Street Pathfinding Visualizer</h1>
-        <h2 style={{marginTop: '10px'}}>find your shortest path...</h2>
-        <button onClick={handleClick} style={{marginTop: '40px'}}>start</button>
+        <h2 style={{ marginTop: "10px" }}>find your shortest path...</h2>
+        <button onClick={handleClick} style={{ marginTop: "40px" }}>
+          start
+        </button>
       </div>
     </CSSTransition>
-  )
+  );
 }
 
 function MainScreen() {
-  const [algorithm, setAlgorithm] = useState('');
+  const [algorithm, setAlgorithm] = useState("");
   const [open, setOpen] = useState(false);
 
-  const handleChange = (event:any) => {
+  const handleChange = (event: any) => {
     setAlgorithm(event.target.value);
   };
 
   const handleDrawerOpen = () => {
     setOpen(true);
-  }
+  };
   const handleDrawerClose = () => {
     setOpen(false);
-  }
+  };
 
-  const submit = (formData:any) => {
-    const startLocation = formData.get("startLocation")
-    alert(`${startLocation}`)
-    handleDrawerClose()
-  }
+  const submit = (formData: any) => {
+    const startLocation = formData.get("startLocation");
+    alert(`${startLocation}`);
+    handleDrawerClose();
+  };
 
   return (
-    <div style={{width: '100vw', height: '100vh'}}>
-      <Map
-        initialViewState={{
-        longitude: -122.4,
-        latitude: 37.8,
-        zoom: 14
-      }}
-        style={{width: '100%', height: '100%'}}
-        mapStyle="https://tiles.openfreemap.org/styles/liberty"
-      />
-      <Fab onClick={handleDrawerOpen} variant="extended" sx={{position: 'absolute', top: 16, left: 16}}>
-        <NavigationIcon sx={{ mr: 1 }}/>
+    <div>
+      <MapOpen />
+
+      <Fab
+        onClick={handleDrawerOpen}
+        variant="extended"
+        sx={{ position: "absolute", top: 16, left: 16 }}
+      >
+        <NavigationIcon sx={{ mr: 1 }} />
         Search Path
       </Fab>
       <Drawer
         sx={{
-          width: '20%'
+          width: "20%",
         }}
         variant="persistent"
         anchor="left"
@@ -67,13 +91,26 @@ function MainScreen() {
           <ChevronLeftIcon />
         </IconButton>
         <form action={submit}>
-          <Stack spacing={'5vh'} sx={{margin: '40px', maxWidth: '300px'}}>
+          <Stack spacing={"5vh"} sx={{ margin: "40px", maxWidth: "300px" }}>
             <div className="text-inputs-container">
-              <TextField name="startLocation" label="Starting Location" variant="outlined" fullWidth />
-              <TextField name="endLocation" label="Destination" variant="outlined" margin="normal" fullWidth />
+              <TextField
+                name="startLocation"
+                label="Starting Location"
+                variant="outlined"
+                fullWidth
+              />
+              <TextField
+                name="endLocation"
+                label="Destination"
+                variant="outlined"
+                margin="normal"
+                fullWidth
+              />
             </div>
             <FormControl sx={{ m: 1, minWidth: 150 }}>
-              <InputLabel id="select-algorithm-label">Select Algorithm</InputLabel>
+              <InputLabel id="select-algorithm-label">
+                Select Algorithm
+              </InputLabel>
               <Select
                 labelId="select-algorithm-label"
                 id="select-algorithm"
@@ -81,10 +118,12 @@ function MainScreen() {
                 label="Select Algorithm"
                 onChange={handleChange}
               >
-                <MenuItem value={'A*-Search'}>A* Search</MenuItem>
-                <MenuItem value={'Breadth-First'}>Breadth-First Search</MenuItem>
-                <MenuItem value={'Depth-First'}>Depth-First Search</MenuItem>
-                <MenuItem value={'Dijkstra'}>Dijkstra's Algorithm</MenuItem>
+                <MenuItem value={"A*-Search"}>A* Search</MenuItem>
+                <MenuItem value={"Breadth-First"}>
+                  Breadth-First Search
+                </MenuItem>
+                <MenuItem value={"Depth-First"}>Depth-First Search</MenuItem>
+                <MenuItem value={"Dijkstra"}>Dijkstra's Algorithm</MenuItem>
               </Select>
             </FormControl>
             <Fab type="submit" onClick={submit} variant="extended">
@@ -95,35 +134,35 @@ function MainScreen() {
         </form>
       </Drawer>
     </div>
-  )
+  );
 }
 
 function App() {
-  const [showStartScreen, setStartScreen] = useState(false)
-  const [showMainScreen, setMainScreen] = useState(false)
-  const nodeRef = useRef(null)
+  const [showStartScreen, setStartScreen] = useState(false);
+  const [showMainScreen, setMainScreen] = useState(false);
+  const nodeRef = useRef(null);
 
   useEffect(() => {
     setTimeout(() => setStartScreen(true), 800); // executes once to setup start screen (allows enter transition to play)
-  }, [])
+  }, []);
 
   const handleClick = () => {
-    setStartScreen(false)
-    setTimeout(() => {setMainScreen(true)}, 800) // delays rendering the main screen until after the start screen transitions
-  }
+    setStartScreen(false);
+    setTimeout(() => {
+      setMainScreen(true);
+    }, 800); // delays rendering the main screen until after the start screen transitions
+  };
 
   return (
     <>
       <StartScreen
-        nodeRef = {nodeRef}
-        showStartScreen = {showStartScreen}
-        handleClick = {handleClick}
+        nodeRef={nodeRef}
+        showStartScreen={showStartScreen}
+        handleClick={handleClick}
       />
-      {showMainScreen &&
-        <MainScreen />
-      }
+      {showMainScreen && <MainScreen />}
     </>
-  )
+  );
 }
 
-export default App
+export default App;
