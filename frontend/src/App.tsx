@@ -13,8 +13,6 @@ import {
 } from "@mui/material";
 import NavigationIcon from "@mui/icons-material/Navigation";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
-//import Map from "react-map-gl/maplibre";
-import "maplibre-gl/dist/maplibre-gl.css";
 import "./App.css";
 import MapOpen from "./components/MapOpen";
 
@@ -70,11 +68,10 @@ function MainScreen() {
   return (
     <div>
       <MapOpen />
-
       <Fab
         onClick={handleDrawerOpen}
         variant="extended"
-        sx={{ position: "absolute", top: 16, left: 16 }}
+        sx={{ position: "absolute", top: 16, left: 64 }}
       >
         <NavigationIcon sx={{ mr: 1 }} />
         Search Path

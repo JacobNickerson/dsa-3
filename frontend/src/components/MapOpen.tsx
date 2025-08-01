@@ -1,3 +1,4 @@
+import Leaflet from 'leaflet'
 import {
   MapContainer,
   TileLayer,
@@ -5,19 +6,22 @@ import {
   Marker,
   Popup,
 } from "react-leaflet";
+
 function MapOpen() {
+  // Map bounds
+  const corner1 = Leaflet.latLng(-90, -200);
+  const corner2 = Leaflet.latLng(90, 200);
+  const bounds = Leaflet.latLngBounds(corner1, corner2);
+
   return (
-    <MapContainer center={[51.505, -0.09]} zoom={13} scrollWheelZoom={false}>
-      <TileLayer
-        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-      />
-      <Marker position={[51.505, -0.09]}>
-        <Popup>
-          A pretty CSS3 popup. <br /> Easily customizable.
-        </Popup>
-      </Marker>
-    </MapContainer>
+    <div style={{width: '100vw', height: '100vh'}}>
+      <MapContainer center={[51.505, -0.09]} zoom={10} minZoom={2} maxBounds={bounds} maxBoundsViscosity={1} scrollWheelZoom={true} style={{ width: '100%', height: '100%' }}>
+        <TileLayer
+          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+        />
+      </MapContainer>
+    </div>
   );
 }
 
