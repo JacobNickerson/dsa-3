@@ -57,6 +57,7 @@ function MainScreen() {
     [40, 40]
   ]
   );
+  const [playAnim, setPlayAnim] = useState(true)
 
   const handleChange = (event: any) => {
     setAlgorithm(event.target.value);
@@ -70,14 +71,23 @@ function MainScreen() {
   };
 
   const submit = (formData: any) => {
+    if (playAnim) {
+      setPlayAnim(false)
+    }
     const startLocation = formData.get("startLocation");
     alert(`${startLocation}`);
     handleDrawerClose();
+    setPathData([
+      [60, 63],
+      [66, 69],
+      [49, 51]
+    ]); // PLACEHOLDER
+    setPlayAnim(true)
   };
 
   return (
     <div>
-      <MapOpen pathData={pathData} />
+      <MapOpen pathData={pathData} playAnim={playAnim} />
       <Fab
         onClick={handleDrawerOpen}
         variant="extended"

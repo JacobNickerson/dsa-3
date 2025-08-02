@@ -5,7 +5,7 @@ import {
 } from "react-leaflet";
 import PathAnimation from './PathAnimation';
 
-function MapOpen({ pathData } : { pathData : number[][] }) {
+function MapOpen({ pathData, playAnim } : { pathData : number[][], playAnim : boolean }) {
   // Map bounds
   const corner1 = Leaflet.latLng(-90, -200);
   const corner2 = Leaflet.latLng(90, 200);
@@ -18,7 +18,7 @@ function MapOpen({ pathData } : { pathData : number[][] }) {
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
-        <PathAnimation playAnim={true} nodes={pathData} />
+        <PathAnimation playAnim={playAnim} nodes={pathData} />
       </MapContainer>
     </div>
   );
