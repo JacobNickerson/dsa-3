@@ -47,6 +47,16 @@ function StartScreen({
 function MainScreen() {
   const [algorithm, setAlgorithm] = useState("");
   const [open, setOpen] = useState(false);
+  const [pathData, setPathData] = useState(
+    // PLACEHOLDER paths...pass an array of arrays/coordinates into the pathAnimation component
+  [
+    [51, 52],
+    [53, 54],
+    [59, 50],
+    [59.21, 45.61],
+    [40, 40]
+  ]
+  );
 
   const handleChange = (event: any) => {
     setAlgorithm(event.target.value);
@@ -67,7 +77,7 @@ function MainScreen() {
 
   return (
     <div>
-      <MapOpen />
+      <MapOpen pathData={pathData} />
       <Fab
         onClick={handleDrawerOpen}
         variant="extended"
@@ -95,6 +105,7 @@ function MainScreen() {
                 label="Starting Location"
                 variant="outlined"
                 fullWidth
+                required
               />
               <TextField
                 name="endLocation"
@@ -102,6 +113,7 @@ function MainScreen() {
                 variant="outlined"
                 margin="normal"
                 fullWidth
+                required
               />
             </div>
             <FormControl sx={{ m: 1, minWidth: 150 }}>
@@ -114,6 +126,7 @@ function MainScreen() {
                 value={algorithm}
                 label="Select Algorithm"
                 onChange={handleChange}
+                required
               >
                 <MenuItem value={"A*-Search"}>A* Search</MenuItem>
                 <MenuItem value={"Breadth-First"}>

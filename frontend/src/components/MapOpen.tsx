@@ -1,13 +1,11 @@
 import Leaflet from 'leaflet'
 import {
   MapContainer,
-  TileLayer,
-  useMapEvents,
-  Marker,
-  Popup,
+  TileLayer
 } from "react-leaflet";
+import PathAnimation from './PathAnimation';
 
-function MapOpen() {
+function MapOpen({ pathData } : { pathData : number[][] }) {
   // Map bounds
   const corner1 = Leaflet.latLng(-90, -200);
   const corner2 = Leaflet.latLng(90, 200);
@@ -20,6 +18,7 @@ function MapOpen() {
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
+        <PathAnimation playAnim={true} nodes={pathData} />
       </MapContainer>
     </div>
   );
