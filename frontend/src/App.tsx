@@ -104,21 +104,30 @@ function App() {
   const [data, setData] = useState(null);
   const [error, setError] = useState(null);
 
-  useEffect(() => {
-    const worker = new Worker(new URL('./bffWorker.tsx', import.meta.url));
-    worker.onmessage = (e) => {
-      const { ok, data, error } = e.data;
-      if (ok) setData(data);
-      else setError(error);
-    };
+  // Code to run the worker and parse JSON on a non-blocking thread
+  // FIXME: This needs to be reworked into a flow, I left it here for now but this should update state so it only runs once
+  //        and path finding can only be performed after it's done parsing
+  // useEffect(() => {
+  //   const worker = new Worker(new URL('./bffWorker.tsx', import.meta.url));
+  //   worker.onmessage = (e) => {
+  //     const { ok, data, error } = e.data;
+  //     if (ok) setData(data);
+  //     else setError(error);
+  //   };
 
-    fetch('/FL-roads.json')
-      .then(res => res.text())
-      .then(text => worker.postMessage(text))
-      .catch(err => setError(err.message));
+  //   fetch('/FL-roads.json')
+  //     .then(res => res.text())
+  //     .then(text => worker.postMessage(text))
+  //     .catch(err => setError(err.message));
 
-    return () => worker.terminate();
-  }, []);
+  //   return () => worker.terminate();
+  // }, []);
+
+  // if (!data) {
+  //   console.log("Still waiting...")
+  // } else {
+  //   const graph = new Graph(data);
+  // }
 
   const [showStartScreen, setStartScreen] = useState(false)
   const [showMainScreen, setMainScreen] = useState(false)
