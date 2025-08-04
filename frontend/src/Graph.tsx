@@ -87,4 +87,54 @@ export class Graph {
         return this.nodes.get(id)!;
     }
 
+    pathfindBFS(start: [number,number], end: [number,number]): PathfindResult {
+        const processing_order: Array<[FLNode,FLNode]> = [];
+        const path: Array<FLNode> = [];
+
+        const visited = new Set<number>();
+        const parent = new Map<number,FLNode>();
+        const q = new Queue<[FLNode,FLNode]>(); // (node, parent), for tracking processing order 
+
+        const start_time = performance.now();
+
+        const [start_node, end_node] = this.findClosestNodes(start,end);
+        q.enqueue([start_node,start_node]); // start node is its own parent to prevent my LSP from blowing up
+        visited.add(start_node.id);
+
+        while (!q.isEmpty()) {
+            const [curr,parent_node] = q.dequeue()!;
+            processing_order.push([curr,parent_node]);
+
+            const neighbors = this.getNeighbors(curr) ?? [];
+
+            for (const [neighbor,_] of neighbors) {
+                if (!visited.has(neighbor)) {
+                    visited.add(neighbor);
+                    parent.set(neighbor, curr);
+
+                    if (neighbor === end_node.id) {
+                        // Reconstruct path by walking parents backward
+                        let node_id: number = end_node.id;
+                        while (node_id) {
+                            path.push(this.getNode(node_id));
+                            const next = parent.get(node_id); 
+                            if (!next) {
+                                break;
+                            } else {
+                                node_id = next.id;
+                            }
+                        }
+                        break;
+                    }
+
+                    q.enqueue([this.getNode(neighbor),curr]);
+                }
+            }
+        }
+
+        const end_time = performance.now();
+        const run_time = end_time-start_time;
+
+        return { processing_order, path, run_time };
+    }
 };
