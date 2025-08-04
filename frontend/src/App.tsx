@@ -44,7 +44,7 @@ function StartScreen({
   );
 }
 
-function MainScreen() {
+function MainScreen(graph : Graph) {
   const [algorithm, setAlgorithm] = useState("");
   const [open, setOpen] = useState(false);
   const [pathData, setPathData] = useState(
@@ -67,9 +67,6 @@ function MainScreen() {
   const [playFinalAnim, setPlayFinalAnim] = useState(true);
   const [startingCoords, setStartingCoords] = useState<[number, number]>([999, 0]);
   const [endingCoords, setEndingCoords] = useState<[number, number]>([999, 0]);
-  const [data, setData] = useState(null);
-  const [error, setError] = useState(null);
-  const [graph, setGraph] = useState<Graph>();
 
   const handleChange = (event: any) => {
     setAlgorithm(event.target.value);
@@ -84,10 +81,8 @@ function MainScreen() {
 
   const pathfind = () => {
     if (graph) {
-      if (algorithm == "A*-Search") {
-        const result = graph.pathfindAStar(startingCoords, endingCoords);
-        console.log(result.run_time);
-      }
+      const result = graph.pathfindBFS(startingCoords, endingCoords);
+      console.log(result.run_time);
     }
   };
   
@@ -100,34 +95,6 @@ function MainScreen() {
     setPlayAnim(true);
     pathfind();
   };
-  // handling the stupid giant json
-
-
-  // Code to run the worker and parse JSON on a non-blocking thread
-  // FIXME: This needs to be reworked into a flow, I left it here for now but this should update state so it only runs once
-  //        and path finding can only be performed after it's done parsing
-  // useEffect(() => {
-  //   const worker = new Worker(new URL('./bffWorker.tsx', import.meta.url));
-  //   worker.onmessage = (e) => {
-  //     const { ok, data, error } = e.data;
-  //     if (ok) setData(data);
-  //     else setError(error);
-  //   };
-
-  //   fetch('/FL-roads.json')
-  //     .then(res => res.text())
-  //     .then(text => worker.postMessage(text))
-  //     .catch(err => setError(err.message));
-
-  //   return () => worker.terminate();
-  // }, []);
-
-  // if (!data) {
-  //   console.log("Still waiting...")
-  // } else {
-  //   const graph = new Graph(data);
-  //   setGraph(graph);
-  // }
 
   return (
     <div>
@@ -189,6 +156,9 @@ function App() {
   const [showStartScreen, setStartScreen] = useState(false);
   const [showMainScreen, setMainScreen] = useState(false);
   const nodeRef = useRef(null);
+  const [data, setData] = useState(null);
+  const [error, setError] = useState(null);
+  const [graph, setGraph] = useState<Graph>();
 
   useEffect(() => {
     setTimeout(() => setStartScreen(true), 800); // executes once to setup start screen (allows enter transition to play)
@@ -201,6 +171,37 @@ function App() {
     }, 800); // delays rendering the main screen until after the start screen transitions
   };
 
+  // handling the stupid giant json
+
+  // Code to run the worker and parse JSON on a non-blocking thread
+  // FIXME: This needs to be reworked into a flow, I left it here for now but this should update state so it only runs once
+  //        and path finding can only be performed after it's done parsing
+  useEffect(() => {
+    const worker = new Worker(new URL('./bffWorker.tsx', import.meta.url));
+    worker.onmessage = (e) => {
+      const { ok, data, error } = e.data;
+      if (ok) setData(data);
+      else setError(error);
+    };
+
+    fetch('/FL-roads.json')
+      .then(res => res.text())
+      .then(text => worker.postMessage(text))
+      .catch(err => setError(err.message));
+
+    return () => worker.terminate();
+  }, []);
+
+  useEffect(() => {
+    if (!data) {
+      console.log("Still waiting...")
+    } else {
+      const graph = new Graph(data);
+      setGraph(graph);
+      console.log(graph.getNodes());
+    }
+  }, [data]);
+
   return (
     <>
       <StartScreen
@@ -208,7 +209,7 @@ function App() {
         showStartScreen={showStartScreen}
         handleClick={handleClick}
       />
-      {showMainScreen && <MainScreen />}
+      {showMainScreen && <MainScreen graphData={graph} />}
     </>
   );
 }

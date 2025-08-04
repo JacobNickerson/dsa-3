@@ -6,6 +6,7 @@ import "leaflet.polyline.snakeanim/L.Polyline.SnakeAnim.js";
 function PathAnimation({
   playAnim,
   nodes,
+  // TODO: Add in final route animation color change bool
 }: {
   playAnim: boolean;
   nodes: number[][];
