@@ -49,15 +49,15 @@ function MainScreen() {
   const [open, setOpen] = useState(false);
   const [pathData, setPathData] = useState(
     // PLACEHOLDER paths...pass an array of arrays/coordinates into the pathAnimation component
-  [
-    [51, 52],
-    [53, 54],
-    [59, 50],
-    [59.21, 45.61],
-    [40, 40]
-  ]
+    [
+      [51, 52],
+      [53, 54],
+      [59, 50],
+      [59.21, 45.61],
+      [40, 40],
+    ]
   );
-  const [playAnim, setPlayAnim] = useState(true)
+  const [playAnim, setPlayAnim] = useState(true);
 
   const handleChange = (event: any) => {
     setAlgorithm(event.target.value);
@@ -72,7 +72,7 @@ function MainScreen() {
 
   const submit = (formData: any) => {
     if (playAnim) {
-      setPlayAnim(false)
+      setPlayAnim(false);
     }
     const startLocation = formData.get("startLocation");
     alert(`${startLocation}`);
@@ -80,14 +80,15 @@ function MainScreen() {
     setPathData([
       [60, 63],
       [66, 69],
-      [49, 51]
+      [49, 51],
     ]); // PLACEHOLDER
-    setPlayAnim(true)
+    setPlayAnim(true);
   };
 
   return (
     <div>
       <MapOpen pathData={pathData} playAnim={playAnim} />
+
       <Fab
         onClick={handleDrawerOpen}
         variant="extended"
@@ -111,7 +112,7 @@ function MainScreen() {
           <Stack spacing={"5vh"} sx={{ margin: "40px", maxWidth: "300px" }}>
             <div className="text-inputs-container">
               <TextField
-                name="startLocation"
+                name="startLocation{}"
                 label="Starting Location"
                 variant="outlined"
                 fullWidth

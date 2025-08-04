@@ -76,6 +76,11 @@ form {
   justify-content: space-around;
 }
 
+.btn btn-secondary{
+  background-color: #d6d5d8;
+  color:#44515c
+}
+
 /* @media (prefers-color-scheme: light) {
   :root {
     color: #213547;
