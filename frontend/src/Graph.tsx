@@ -21,8 +21,9 @@ export interface BigFatFile {
 
 type PathfindResult = {
     processing_order: Array<[FLNode,FLNode]>, 
-    path: Array<FLNode>,
-    run_time: number
+    path: Array<[FLNode,FLNode]>,
+    run_time: number,
+    total_weight: number
 };
 
 function squaredDistance(source: [number,number], target: [number,number]) {
@@ -89,10 +90,11 @@ export class Graph {
 
     pathfindBFS(start: [number,number], end: [number,number]): PathfindResult {
         const processing_order: Array<[FLNode,FLNode]> = [];
-        const path: Array<FLNode> = [];
+        const path: Array<[FLNode,FLNode]> = [];
+        let total_weight = 0;
 
         const visited = new Set<number>();
-        const parent = new Map<number,FLNode>();
+        const parent = new Map<number,[FLNode,number]>();
         const q = new Queue<[FLNode,FLNode]>(); // (node, parent), for tracking processing order 
 
         const start_time = performance.now();
@@ -107,21 +109,23 @@ export class Graph {
 
             const neighbors = this.getNeighbors(curr) ?? [];
 
-            for (const [neighbor,_] of neighbors) {
+            for (const [neighbor,weight] of neighbors) {
                 if (!visited.has(neighbor)) {
                     visited.add(neighbor);
-                    parent.set(neighbor, curr);
+                    parent.set(neighbor, [curr,weight]);
 
                     if (neighbor === end_node.id) {
                         // Reconstruct path by walking parents backward
                         let node_id: number = end_node.id;
                         while (node_id) {
-                            path.push(this.getNode(node_id));
-                            const next = parent.get(node_id); 
-                            if (!next) {
+                            const temp = parent.get(node_id)!;
+                            if (!temp) {
                                 break;
                             } else {
+                                const [next,weight] = temp;
+                                path.push([next,this.getNode(node_id)]);
                                 node_id = next.id;
+                                total_weight += weight;
                             }
                         }
                         break;
@@ -134,7 +138,9 @@ export class Graph {
 
         const end_time = performance.now();
         const run_time = end_time-start_time;
+        path.reverse();
 
-        return { processing_order, path, run_time };
+        return { processing_order, path, run_time, total_weight };
     }
+
 };
