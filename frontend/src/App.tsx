@@ -34,7 +34,7 @@ function StartScreen({
       unmountOnExit
     >
       <div className="start-screen" ref={nodeRef}>
-        <h1>Street Pathfinding Visualizer</h1>
+        <h1>Florida Street Pathfinding Visualizer</h1>
         <h2 style={{ marginTop: "10px" }}>find your shortest path...</h2>
         <button onClick={handleClick} style={{ marginTop: "40px" }}>
           start
