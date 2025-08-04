@@ -1,21 +1,26 @@
 import Leaflet from "leaflet";
 import { useMap } from "react-leaflet";
 import { useEffect } from "react";
+import type { FLNode } from "../Graph"
 import "leaflet.polyline.snakeanim/L.Polyline.SnakeAnim.js";
 
-function PathAnimation({
+export function DrawFinalPath({
   playAnim,
-  nodes,
-  // TODO: Add in final route animation color change bool
+  edges,
 }: {
   playAnim: boolean;
-  nodes: number[][];
+  edges: Array<[FLNode,FLNode]>;
 }) {
   const map = useMap();
-  const pathNodes = nodes.map((coords) => Leaflet.latLng(coords[0], coords[1]));
 
   useEffect(() => {
     if (playAnim) {
+      if (!edges || edges.length === 0) {
+        console.log("NO EDGES")
+        return;
+      }
+      console.log("EDGES!!!")
+      const pathNodes = edges.map(([_,to]) => Leaflet.latLng(to.lat, to.lon));
       const path = Leaflet.polyline([pathNodes]);
       // map.fitBounds(path.getBounds());     <- turn ON to enable screen moving to the path animation
       map.addLayer(path);
@@ -32,4 +37,12 @@ function PathAnimation({
   return null;
 }
 
-export default PathAnimation;
+export function DrawSearchOrder({
+  playAnim,
+  edges,
+}: {
+  playAnim: boolean;
+  edges: Array<[FLNode,FLNode]>;
+}) {
+  return null;
+}

@@ -9,8 +9,9 @@ import {
 import { LatLng } from "leaflet";
 import { useEffect, useRef, useState } from "react";
 import { BorderColor } from "@mui/icons-material";
-import PathAnimation from "./PathAnimation";
+import { DrawFinalPath, DrawSearchOrder } from "./PathAnimation";
 import icon from "leaflet/dist/images/marker-icon.png";
+import type { FLNode } from "../Graph"
 //import "bootstrap/dist/css/bootstrap.css";
 
 function PinMarker({
@@ -82,18 +83,18 @@ function LocationDisplay({
 
 function MapOpen({
   pathData,
-  finalPathData,
+  searchOrder,
   playAnim,
-  playFinalAnim,
+  playSearchAnim,
   setStartCoords,
   setEndCoords,
 }: {
-  pathData: any;
-  finalPathData: any;
+  pathData: Array<[FLNode, FLNode]>;
+  searchOrder: Array<[FLNode,FLNode]>;
   playAnim: boolean;
-  playFinalAnim: boolean;
-  setStartCoords: any;
-  setEndCoords: any;
+  playSearchAnim: boolean;
+  setStartCoords: [number,number];
+  setEndCoords: [number,number];
 }) {
   // Florida bounding box
   const corner1 = Leaflet.latLng(24, -88);
@@ -110,6 +111,7 @@ function MapOpen({
       const endCoords = [selectedB.lat, selectedB.lng];
       setStartCoords(startCoords);
       setEndCoords(endCoords);
+      console.log(startCoords, endCoords);
     }
   }, [selectedA, selectedB]);
 
@@ -129,8 +131,8 @@ function MapOpen({
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
         <PinMarker onSelectA={setSelectedA} onSelectB={setSelectedB} />
-        <PathAnimation playAnim={playAnim} nodes={pathData} />
-        <PathAnimation playAnim={playFinalAnim} nodes={finalPathData} />
+        <DrawFinalPath playAnim={playAnim} edges={pathData} />
+        <DrawSearchOrder playAnim={playSearchAnim} edges={searchOrder} />
       </MapContainer>
     </div>
   );
