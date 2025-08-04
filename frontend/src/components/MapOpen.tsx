@@ -1,4 +1,4 @@
-import Leaflet, { latLng } from "leaflet";
+import Leaflet from "leaflet";
 import {
   MapContainer,
   TileLayer,
@@ -17,19 +17,22 @@ function PinMarker() {
   const [position, setPosition] = useState<LatLng>();
   const [selectedA, setSelectedA] = useState<LatLng>();
   const [selectedB, setSelectedB] = useState<LatLng>();
+  const pinReference = useRef<L.Marker | null>(null);
 
   const map = useMapEvents({
     click(e) {
       setPosition(e.latlng);
+      if (pinReference.current) {
+        pinReference.current.openPopup();
+      }
       map.locate();
     },
   });
-
-  //Positon here! {position.lat.toFixed(2)} {position.lng.toFixed(2)}
   return (
     <>
       {position && (
-        <Marker position={position}>
+        <Marker position={position} ref={pinReference}>
+          .
           <Popup>
             <div>
               Position is at: {position.lat.toFixed(2)}{" "}
@@ -55,7 +58,6 @@ function MapOpen({
   const corner1 = Leaflet.latLng(24, -88);
   const corner2 = Leaflet.latLng(31, -77);
   const bounds = Leaflet.latLngBounds(corner1, corner2);
-
   return (
     <div style={{ width: "100vw", height: "100vh" }}>
       <MapContainer
@@ -77,5 +79,4 @@ function MapOpen({
     </div>
   );
 }
-
 export default MapOpen;
