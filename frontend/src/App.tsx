@@ -149,7 +149,7 @@ function App() {
   const nodeRef = useRef(null);
   const [data, setData] = useState(null);
   const [error, setError] = useState(null);
-  let graphData : Graph;
+  const [graph, setGraph] = useState<Graph>();
   const [processOrder, setProcessOrder] = useState();
   const [path, setPath] = useState();
   const [runtime, setRuntime] = useState(); 
@@ -184,7 +184,7 @@ function App() {
     if (!data) {
       console.log("Still waiting...");
     } else {
-      graphData = new Graph(data);
+      const graphData = new Graph(data);
       if (graphData) {
         console.log(graphData); //testing
         console.log(graphData.pathfindAStar([29.59, -82.80], [28.31, -81.53])); //testing
@@ -197,8 +197,8 @@ function App() {
   }, [data]);
 
   useEffect(() => {
-    console.log(graphData);
-    if (graphData) {
+    console.log(graph);
+    if (graph) {
       if (algorithm == "A*-Search") {
         console.log("ready!");
       }
