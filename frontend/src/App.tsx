@@ -14,7 +14,8 @@ import NavigationIcon from "@mui/icons-material/Navigation";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import "./App.css";
 import MapOpen from "./components/MapOpen";
-import { Graph } from "./Graph.tsx";
+import type { FLNode } from "./Graph"
+import { Graph } from "./Graph";
 
 function LoadingScreen({
   nodeRef,
@@ -59,7 +60,7 @@ function MainScreen({
   setStartingCoords: any;
   setEndingCoords: any;
   algorithm: any;
-  pathData: any;
+  pathData: Array<[FLNode,FLNode]> | null;
   playAnim: boolean;
   setPlayAnim: any;
   pathFinalData: any;
@@ -170,14 +171,7 @@ function App() {
   const [runtime, setRuntime] = useState();
   const [weight, setWeight] = useState();
   const graphRef = useRef<Graph | null>(null);
-  const [pathData, setPathData] = useState(
-    // PLACEHOLDER paths...pass an array of arrays/coordinates into the pathAnimation component
-    [
-      [28.64, -81.78],
-      [27.4, -80.39],
-      [27.32, -81.35],
-    ]
-  );
+  const [pathData, setPathData] = useState(null);
   const [playAnim, setPlayAnim] = useState(false);
   const [pathFinalData, setPathFinalData] = useState(
     // PLACEHOLDER paths...pass an array of arrays/coordinates into the pathAnimation component
@@ -232,10 +226,7 @@ function App() {
     if (graphRef.current && algorithm) {
       if (algorithm == "A*-Search" && startingCoords && endingCoords) {
         const result = graphRef.current.pathfindAStar(startingCoords, endingCoords);
-        result.path.shift();
-        const coordsFromRes = result.path.map(([node1, node2]) => ([[node1.lat, node1.lon], [node2.lat, node2.lon]]));
-        const coordsToProcess = coordsFromRes.flat();
-        setPathData(coordsToProcess);
+        setPathData(result.path);
         console.log(pathData);
       }
     }

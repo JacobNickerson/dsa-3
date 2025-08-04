@@ -2,7 +2,7 @@ import { Queue,Stack } from 'typescript-collections';
 import TinyQueue from 'tinyqueue';
 
 
-type FLNode = {
+export type FLNode = {
     id: number,
     lat: number,
     lon: number
@@ -139,7 +139,7 @@ export class Graph {
 
         const end_time = performance.now();
         const run_time = end_time-start_time;
-        path.reverse();
+        path.reverse().shift();
 
         return { processing_order, path, run_time, total_weight };
     }
@@ -194,7 +194,7 @@ export class Graph {
 
         const end_time = performance.now();
         const run_time = end_time-start_time;
-        path.reverse();
+        path.reverse().shift();
 
         return { processing_order, path, run_time, total_weight };
     }
@@ -257,7 +257,7 @@ export class Graph {
 
         const end_time = performance.now();
         const run_time = end_time-start_time;
-        path.reverse();
+        path.reverse().shift();
 
         const total_weight = distance_map.get(end_node.id)![0]; 
         return { processing_order, path, run_time, total_weight };
@@ -364,7 +364,7 @@ export class Graph {
 
         const end_time = performance.now();
         const run_time = end_time-start_time;
-        path.reverse();
+        path.reverse().shift();
 
         return { processing_order, path, run_time, total_weight };
     }
