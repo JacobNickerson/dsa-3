@@ -6,6 +6,7 @@ import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import Map from 'react-map-gl/maplibre'
 import 'maplibre-gl/dist/maplibre-gl.css'
 import './App.css'
+import { Graph } from './Graph.tsx'
 
 function StartScreen({ nodeRef, showStartScreen, handleClick } : { nodeRef:any, showStartScreen:any, handleClick:any }) {
   return (
@@ -99,6 +100,35 @@ function MainScreen() {
 }
 
 function App() {
+  // handling the stupid giant json
+  const [data, setData] = useState(null);
+  const [error, setError] = useState(null);
+
+  // Code to run the worker and parse JSON on a non-blocking thread
+  // FIXME: This needs to be reworked into a flow, I left it here for now but this should update state so it only runs once
+  //        and path finding can only be performed after it's done parsing
+  // useEffect(() => {
+  //   const worker = new Worker(new URL('./bffWorker.tsx', import.meta.url));
+  //   worker.onmessage = (e) => {
+  //     const { ok, data, error } = e.data;
+  //     if (ok) setData(data);
+  //     else setError(error);
+  //   };
+
+  //   fetch('/FL-roads.json')
+  //     .then(res => res.text())
+  //     .then(text => worker.postMessage(text))
+  //     .catch(err => setError(err.message));
+
+  //   return () => worker.terminate();
+  // }, []);
+
+  // if (!data) {
+  //   console.log("Still waiting...")
+  // } else {
+  //   const graph = new Graph(data);
+  // }
+
   const [showStartScreen, setStartScreen] = useState(false)
   const [showMainScreen, setMainScreen] = useState(false)
   const nodeRef = useRef(null)
