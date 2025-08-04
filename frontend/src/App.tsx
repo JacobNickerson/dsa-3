@@ -14,11 +14,11 @@ import NavigationIcon from "@mui/icons-material/Navigation";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import "./App.css";
 import MapOpen from "./components/MapOpen";
-import { Graph } from './Graph.tsx'
+import { Graph } from "./Graph.tsx";
 
 function LoadingScreen({
   nodeRef,
-  showLoadingScreen
+  showLoadingScreen,
 }: {
   nodeRef: any;
   showLoadingScreen: boolean;
@@ -39,14 +39,28 @@ function LoadingScreen({
   );
 }
 
-function MainScreen({ buttonClick, setButtonClick, setAlgorithm, setStartingCoords, setEndingCoords, algorithm } : { buttonClick: boolean, setButtonClick: any, setAlgorithm : any, setStartingCoords : any, setEndingCoords : any, algorithm: any }) {
+function MainScreen({
+  buttonClick,
+  setButtonClick,
+  setAlgorithm,
+  setStartingCoords,
+  setEndingCoords,
+  algorithm,
+}: {
+  buttonClick: boolean;
+  setButtonClick: any;
+  setAlgorithm: any;
+  setStartingCoords: any;
+  setEndingCoords: any;
+  algorithm: any;
+}) {
   const [open, setOpen] = useState(false);
   const [pathData, setPathData] = useState(
     // PLACEHOLDER paths...pass an array of arrays/coordinates into the pathAnimation component
     [
       [28.64, -81.78],
-      [27.40, -80.39],
-      [27.32, -81.35]
+      [27.4, -80.39],
+      [27.32, -81.35],
     ]
   );
   const [playAnim, setPlayAnim] = useState(false);
@@ -54,8 +68,8 @@ function MainScreen({ buttonClick, setButtonClick, setAlgorithm, setStartingCoor
     // PLACEHOLDER paths...pass an array of arrays/coordinates into the pathAnimation component
     [
       [28.64, -81.78],
-      [27.40, -80.39],
-      [27.32, -81.35]
+      [27.4, -80.39],
+      [27.32, -81.35],
     ]
   );
   const [playFinalAnim, setPlayFinalAnim] = useState(true);
@@ -70,8 +84,8 @@ function MainScreen({ buttonClick, setButtonClick, setAlgorithm, setStartingCoor
   const handleDrawerClose = () => {
     setOpen(false);
   };
-    
-  const submit = (formData : any) => {
+
+  const submit = (formData: any) => {
     if (playAnim) {
       setPlayAnim(false);
     }
@@ -85,7 +99,14 @@ function MainScreen({ buttonClick, setButtonClick, setAlgorithm, setStartingCoor
 
   return (
     <div>
-      <MapOpen pathData={pathData} playAnim={playAnim} finalPathData={pathFinalData} playFinalAnim={playFinalAnim} setStartCoords={setStartingCoords} setEndCoords={setEndingCoords} />
+      <MapOpen
+        pathData={pathData}
+        playAnim={playAnim}
+        finalPathData={pathFinalData}
+        playFinalAnim={playFinalAnim}
+        setStartCoords={setStartingCoords}
+        setEndCoords={setEndingCoords}
+      />
       <Fab
         onClick={handleDrawerOpen}
         variant="extended"
@@ -143,17 +164,20 @@ function App() {
   const [algorithm, setAlgorithm] = useState("");
   const [showLoadingScreen, setLoadingScreen] = useState(false);
   const [showMainScreen, setMainScreen] = useState(false);
-  const [startingCoords, setStartingCoords] = useState<[number, number]>([999, 0]);
+  const [startingCoords, setStartingCoords] = useState<[number, number]>([
+    999, 0,
+  ]);
   const [endingCoords, setEndingCoords] = useState<[number, number]>([999, 0]);
   const [buttonClick, setButtonClick] = useState(false);
   const nodeRef = useRef(null);
   const [data, setData] = useState(null);
   const [error, setError] = useState(null);
-  let graphData : Graph;
+  let graphData: Graph;
   const [processOrder, setProcessOrder] = useState();
   const [path, setPath] = useState();
-  const [runtime, setRuntime] = useState(); 
+  const [runtime, setRuntime] = useState();
   const [weight, setWeight] = useState();
+  const graphRef = useRef<Graph | null>(null);
 
   useEffect(() => {
     setTimeout(() => setLoadingScreen(true), 800); // executes once to setup loading screen (allows enter transition to play)
@@ -165,17 +189,17 @@ function App() {
   // FIXME: This needs to be reworked into a flow, I left it here for now but this should update state so it only runs once
   //        and path finding can only be performed after it's done parsing
   useEffect(() => {
-    const worker = new Worker(new URL('./bffWorker.tsx', import.meta.url));
+    const worker = new Worker(new URL("./bffWorker.tsx", import.meta.url));
     worker.onmessage = (e) => {
       const { ok, data, error } = e.data;
       if (ok) setData(data);
       else setError(error);
     };
 
-    fetch('/FL-roads.json')
-      .then(res => res.text())
-      .then(text => worker.postMessage(text))
-      .catch(err => setError(err.message));
+    fetch("/FL-roads.json")
+      .then((res) => res.text())
+      .then((text) => worker.postMessage(text))
+      .catch((err) => setError(err.message));
 
     return () => worker.terminate();
   }, []);
@@ -184,10 +208,12 @@ function App() {
     if (!data) {
       console.log("Still waiting...");
     } else {
-      graphData = new Graph(data);
-      if (graphData) {
-        console.log(graphData); //testing
-        console.log(graphData.pathfindAStar([29.59, -82.80], [28.31, -81.53])); //testing
+      graphRef.current = new Graph(data);
+      if (graphRef) {
+        console.log(graphRef.current); //testing
+        console.log(
+          graphRef.current.pathfindAStar([29.59, -82.8], [28.31, -81.53])
+        ); //testing
         setLoadingScreen(false);
         setTimeout(() => {
           setMainScreen(true);
@@ -197,13 +223,12 @@ function App() {
   }, [data]);
 
   useEffect(() => {
-    console.log(graphData);
-    if (graphData) {
+    console.log(graphRef.current);
+    if (graphRef.current) {
       if (algorithm == "A*-Search") {
         console.log("ready!");
       }
-    }
-    else {
+    } else {
       console.log("why wont this load..??");
     }
   }, [buttonClick]);
@@ -211,7 +236,16 @@ function App() {
   return (
     <>
       <LoadingScreen nodeRef={nodeRef} showLoadingScreen={showLoadingScreen} />
-      {showMainScreen && <MainScreen buttonClick={buttonClick} setButtonClick={setButtonClick} algorithm={algorithm} setAlgorithm={setAlgorithm} setStartingCoords={setStartingCoords} setEndingCoords={setEndingCoords} />}
+      {showMainScreen && (
+        <MainScreen
+          buttonClick={buttonClick}
+          setButtonClick={setButtonClick}
+          algorithm={algorithm}
+          setAlgorithm={setAlgorithm}
+          setStartingCoords={setStartingCoords}
+          setEndingCoords={setEndingCoords}
+        />
+      )}
     </>
   );
 }

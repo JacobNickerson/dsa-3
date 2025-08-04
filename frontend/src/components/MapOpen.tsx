@@ -10,10 +10,16 @@ import { LatLng } from "leaflet";
 import { useEffect, useRef, useState } from "react";
 import { BorderColor } from "@mui/icons-material";
 import PathAnimation from "./PathAnimation";
-import icon from 'leaflet/dist/images/marker-icon.png';
+import icon from "leaflet/dist/images/marker-icon.png";
 //import "bootstrap/dist/css/bootstrap.css";
 
-function PinMarker({ onSelectA, onSelectB } : { onSelectA : any, onSelectB : any }) {
+function PinMarker({
+  onSelectA,
+  onSelectB,
+}: {
+  onSelectA: any;
+  onSelectB: any;
+}) {
   const [position, setPosition] = useState<LatLng>();
   const pinReference = useRef<L.Marker | null>(null);
 
@@ -51,7 +57,7 @@ function PinMarker({ onSelectA, onSelectB } : { onSelectA : any, onSelectB : any
   );
 }
 
-function LocationDisplay ({
+function LocationDisplay({
   selectedA,
   selectedB,
 }: {
@@ -80,7 +86,7 @@ function MapOpen({
   playAnim,
   playFinalAnim,
   setStartCoords,
-  setEndCoords
+  setEndCoords,
 }: {
   pathData: any;
   finalPathData: any;
@@ -106,7 +112,7 @@ function MapOpen({
       setEndCoords(endCoords);
     }
   }, [selectedA, selectedB]);
-  
+
   return (
     <div style={{ width: "100vw", height: "100vh" }}>
       <MapContainer
