@@ -10,7 +10,6 @@ function PathAnimation( { playAnim, nodes } : { playAnim : boolean, nodes : numb
     useEffect(() => {
         if (playAnim) {
             const path = Leaflet.polyline([pathNodes]);
-            map.fitBounds(path.getBounds());
             map.addLayer(path);
             path.snakeIn();
         }

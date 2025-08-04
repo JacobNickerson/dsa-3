@@ -6,7 +6,6 @@ import {
   Marker,
   Popup,
 } from "react-leaflet";
-import L from "leaflet";
 import { LatLng } from "leaflet";
 import { useEffect, useRef, useState } from "react";
 import { BorderColor } from "@mui/icons-material";
@@ -60,8 +59,8 @@ function MapOpen({
     <div style={{ width: "100vw", height: "100vh" }}>
       <MapContainer
         center={[29.63, -82.33]}
-        zoom={10}
-        minZoom={2}
+        zoom={8}
+        minZoom={8}
         maxBounds={bounds}
         maxBoundsViscosity={1}
         scrollWheelZoom={true}
