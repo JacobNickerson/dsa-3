@@ -68,6 +68,7 @@ function MainScreen() {
   return (
     <div>
       <MapOpen />
+
       <Fab
         onClick={handleDrawerOpen}
         variant="extended"
@@ -91,7 +92,7 @@ function MainScreen() {
           <Stack spacing={"5vh"} sx={{ margin: "40px", maxWidth: "300px" }}>
             <div className="text-inputs-container">
               <TextField
-                name="startLocation"
+                name="startLocation{}"
                 label="Starting Location"
                 variant="outlined"
                 fullWidth
