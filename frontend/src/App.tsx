@@ -229,17 +229,15 @@ function App() {
   }, [data]);
 
   useEffect(() => {
-    if (graphRef.current) {
+    if (graphRef.current && algorithm) {
       if (algorithm == "A*-Search" && startingCoords && endingCoords) {
         const result = graphRef.current.pathfindAStar(startingCoords, endingCoords);
-        result.processing_order.shift();
-        const coordsFromRes = result.processing_order.map(([node1, node2]) => ([[node1.lat, node1.lon], [node2.lat, node2.lon]]));
+        result.path.shift();
+        const coordsFromRes = result.path.map(([node1, node2]) => ([[node1.lat, node1.lon], [node2.lat, node2.lon]]));
         const coordsToProcess = coordsFromRes.flat();
         setPathData(coordsToProcess);
         console.log(pathData);
       }
-    } else {
-      console.log("why wont this load..??");
     }
   }, [buttonClick]);
 
