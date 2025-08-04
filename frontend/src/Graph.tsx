@@ -254,17 +254,6 @@ export class Graph {
                 }
             }
         }
-        // // Reconstruct path by walking parents backward
-        // let node_id: number = end_node.id;
-        // while (node_id) {
-        //     const [_,parent] = distance_map.get(node_id)!;
-        //     if (!parent) {
-        //         break;
-        //     } else {
-        //         path.push([this.getNode(node_id),parent]);
-        //         node_id = parent.id;
-        //     }
-        // }
 
         const end_time = performance.now();
         const run_time = end_time-start_time;
