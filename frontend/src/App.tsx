@@ -50,9 +50,9 @@ function MainScreen({
   pathData,
   playAnim,
   setPlayAnim,
-  pathFinalData,
-  playFinalAnim,
-  setPlayFinalAnim
+  searchOrder,
+  playSearchAnim,
+  setPlaySearchAnim
 }: {
   buttonClick: boolean;
   setButtonClick: any;
@@ -63,9 +63,9 @@ function MainScreen({
   pathData: Array<[FLNode,FLNode]> | null;
   playAnim: boolean;
   setPlayAnim: any;
-  pathFinalData: any;
-  playFinalAnim: boolean;
-  setPlayFinalAnim: any;
+  searchOrder: Array<[FLNode,FLNode]> | null;
+  playSearchAnim: boolean;
+  setPlaySearchAnim: any;
 }) {
   const [open, setOpen] = useState(false);
 
@@ -83,11 +83,13 @@ function MainScreen({
   const submit = (formData: any) => {
     if (playAnim) {
       setPlayAnim(false);
+      setPlaySearchAnim(false);
     }
     if (formData.get) {
       const selectAlgo = formData.get("select-algorithm"); // clearing previous paths will NOT work without this line!!
       setAlgorithm(selectAlgo);
       setPlayAnim(true);
+      setPlaySearchAnim(true);
       setButtonClick(!buttonClick);
     }
   };
@@ -97,8 +99,8 @@ function MainScreen({
       <MapOpen
         pathData={pathData}
         playAnim={playAnim}
-        finalPathData={pathFinalData}
-        playFinalAnim={playFinalAnim}
+        searchOrder={searchOrder}
+        playSearchAnim={playSearchAnim}
         setStartCoords={setStartingCoords}
         setEndCoords={setEndingCoords}
       />
@@ -165,23 +167,13 @@ function App() {
   const nodeRef = useRef(null);
   const [data, setData] = useState(null);
   const [error, setError] = useState(null);
-  let graphData: Graph;
-  const [processOrder, setProcessOrder] = useState();
-  const [path, setPath] = useState();
   const [runtime, setRuntime] = useState();
   const [weight, setWeight] = useState();
   const graphRef = useRef<Graph | null>(null);
   const [pathData, setPathData] = useState(null);
   const [playAnim, setPlayAnim] = useState(false);
-  const [pathFinalData, setPathFinalData] = useState(
-    // PLACEHOLDER paths...pass an array of arrays/coordinates into the pathAnimation component
-    [
-      [28.64, -81.78],
-      [27.4, -80.39],
-      [27.32, -81.35],
-    ]
-  );
-  const [playFinalAnim, setPlayFinalAnim] = useState(true);
+  const [searchOrder, setSearchOrder] = useState(null);
+  const [playSearchAnim, setPlaySearchAnim] = useState(true);
 
   useEffect(() => {
     setTimeout(() => setLoadingScreen(true), 800); // executes once to setup loading screen (allows enter transition to play)
@@ -210,7 +202,7 @@ function App() {
 
   useEffect(() => {
     if (!data) {
-      console.log("Still waiting...");
+      console.log("Still loading the big fat file...");
     } else {
       graphRef.current = new Graph(data);
       if (graphRef) {
@@ -223,12 +215,32 @@ function App() {
   }, [data]);
 
   useEffect(() => {
-    if (graphRef.current && algorithm) {
-      if (algorithm == "A*-Search" && startingCoords && endingCoords) {
-        const result = graphRef.current.pathfindAStar(startingCoords, endingCoords);
-        setPathData(result.path);
-        console.log(pathData);
+    if (graphRef.current) {
+      if (!startingCoords || !endingCoords) {
+        return;
       }
+      let result = null;
+      switch (algorithm) {
+        case "A*-Search": {
+          result = graphRef.current.pathfindAStar(startingCoords, endingCoords);
+          break;
+        }
+        case "Dijkstra": {
+          result = graphRef.current.pathfindDijkstra(startingCoords, endingCoords);
+          break;
+        }
+        case "Depth-First": {
+          result = graphRef.current.pathfindDFS(startingCoords, endingCoords);
+          break;
+        }
+        case "Breadth-First": {
+          result = graphRef.current.pathfindBFS(startingCoords, endingCoords);
+          break;
+        }
+      }
+      if (!result) { return; }
+      setPathData(result.path);
+      setSearchOrder(result.processing_order);
     }
   }, [buttonClick]);
 
@@ -246,9 +258,9 @@ function App() {
           pathData={pathData}
           playAnim={playAnim}
           setPlayAnim={setPlayAnim}
-          pathFinalData={pathFinalData}
-          playFinalAnim={playFinalAnim}
-          setPlayFinalAnim={setPlayFinalAnim}
+          searchOrder={searchOrder}
+          playSearchAnim={playSearchAnim}
+          setPlaySearchAnim={setPlaySearchAnim}
         />
       )}
     </>

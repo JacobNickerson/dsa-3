@@ -111,7 +111,6 @@ function MapOpen({
       const endCoords = [selectedB.lat, selectedB.lng];
       setStartCoords(startCoords);
       setEndCoords(endCoords);
-      console.log(startCoords, endCoords);
     }
   }, [selectedA, selectedB]);
 
