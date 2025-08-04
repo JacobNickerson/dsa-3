@@ -46,6 +46,12 @@ function MainScreen({
   setStartingCoords,
   setEndingCoords,
   algorithm,
+  pathData,
+  playAnim,
+  setPlayAnim,
+  pathFinalData,
+  playFinalAnim,
+  setPlayFinalAnim
 }: {
   buttonClick: boolean;
   setButtonClick: any;
@@ -53,26 +59,14 @@ function MainScreen({
   setStartingCoords: any;
   setEndingCoords: any;
   algorithm: any;
+  pathData: any;
+  playAnim: boolean;
+  setPlayAnim: any;
+  pathFinalData: any;
+  playFinalAnim: boolean;
+  setPlayFinalAnim: any;
 }) {
   const [open, setOpen] = useState(false);
-  const [pathData, setPathData] = useState(
-    // PLACEHOLDER paths...pass an array of arrays/coordinates into the pathAnimation component
-    [
-      [28.64, -81.78],
-      [27.4, -80.39],
-      [27.32, -81.35],
-    ]
-  );
-  const [playAnim, setPlayAnim] = useState(false);
-  const [pathFinalData, setPathFinalData] = useState(
-    // PLACEHOLDER paths...pass an array of arrays/coordinates into the pathAnimation component
-    [
-      [28.64, -81.78],
-      [27.4, -80.39],
-      [27.32, -81.35],
-    ]
-  );
-  const [playFinalAnim, setPlayFinalAnim] = useState(true);
 
   const handleChange = (event: any) => {
     setAlgorithm(event.target.value);
@@ -164,10 +158,8 @@ function App() {
   const [algorithm, setAlgorithm] = useState("");
   const [showLoadingScreen, setLoadingScreen] = useState(false);
   const [showMainScreen, setMainScreen] = useState(false);
-  const [startingCoords, setStartingCoords] = useState<[number, number]>([
-    999, 0,
-  ]);
-  const [endingCoords, setEndingCoords] = useState<[number, number]>([999, 0]);
+  const [startingCoords, setStartingCoords] = useState<[number, number]>();
+  const [endingCoords, setEndingCoords] = useState<[number, number]>();
   const [buttonClick, setButtonClick] = useState(false);
   const nodeRef = useRef(null);
   const [data, setData] = useState(null);
@@ -178,6 +170,24 @@ function App() {
   const [runtime, setRuntime] = useState();
   const [weight, setWeight] = useState();
   const graphRef = useRef<Graph | null>(null);
+  const [pathData, setPathData] = useState(
+    // PLACEHOLDER paths...pass an array of arrays/coordinates into the pathAnimation component
+    [
+      [28.64, -81.78],
+      [27.4, -80.39],
+      [27.32, -81.35],
+    ]
+  );
+  const [playAnim, setPlayAnim] = useState(false);
+  const [pathFinalData, setPathFinalData] = useState(
+    // PLACEHOLDER paths...pass an array of arrays/coordinates into the pathAnimation component
+    [
+      [28.64, -81.78],
+      [27.4, -80.39],
+      [27.32, -81.35],
+    ]
+  );
+  const [playFinalAnim, setPlayFinalAnim] = useState(true);
 
   useEffect(() => {
     setTimeout(() => setLoadingScreen(true), 800); // executes once to setup loading screen (allows enter transition to play)
@@ -210,10 +220,6 @@ function App() {
     } else {
       graphRef.current = new Graph(data);
       if (graphRef) {
-        console.log(graphRef.current); //testing
-        console.log(
-          graphRef.current.pathfindAStar([29.59, -82.8], [28.31, -81.53])
-        ); //testing
         setLoadingScreen(false);
         setTimeout(() => {
           setMainScreen(true);
@@ -223,10 +229,14 @@ function App() {
   }, [data]);
 
   useEffect(() => {
-    console.log(graphRef.current);
     if (graphRef.current) {
-      if (algorithm == "A*-Search") {
-        console.log("ready!");
+      if (algorithm == "A*-Search" && startingCoords && endingCoords) {
+        const result = graphRef.current.pathfindAStar(startingCoords, endingCoords);
+        result.processing_order.shift();
+        const coordsFromRes = result.processing_order.map(([node1, node2]) => ([[node1.lat, node1.lon], [node2.lat, node2.lon]]));
+        const coordsToProcess = coordsFromRes.flat();
+        setPathData(coordsToProcess);
+        console.log(pathData);
       }
     } else {
       console.log("why wont this load..??");
@@ -244,6 +254,12 @@ function App() {
           setAlgorithm={setAlgorithm}
           setStartingCoords={setStartingCoords}
           setEndingCoords={setEndingCoords}
+          pathData={pathData}
+          playAnim={playAnim}
+          setPlayAnim={setPlayAnim}
+          pathFinalData={pathFinalData}
+          playFinalAnim={playFinalAnim}
+          setPlayFinalAnim={setPlayFinalAnim}
         />
       )}
     </>
