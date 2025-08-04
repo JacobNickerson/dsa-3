@@ -1,4 +1,5 @@
-import { PriorityQueue,Queue,Stack } from 'typescript-collections';
+import { Queue,Stack } from 'typescript-collections';
+import TinyQueue from 'tinyqueue';
 
 
 type FLNode = {
@@ -208,19 +209,19 @@ export class Graph {
             distance_map.set(node_id,[Infinity,null]);
         } 
         const comp = (a:[[FLNode,number],FLNode] , b:[[FLNode,number],FLNode]): number => {
-            return b[0][1] - a[0][1];
+            return a[0][1] - b[0][1];
         };
-        const pq = new PriorityQueue<[[FLNode,number],FLNode]>(comp); // goofy ahhh typing: [[node,weight],parent] (for tracking processing order)
+        const pq = new TinyQueue<[[FLNode,number],FLNode]>([],comp); // goofy ahhh typing: [[node,weight],parent] (for tracking processing order)
 
         const start_time = performance.now();
 
         const [start_node, end_node] = this.findClosestNodes(start,end);
 
         distance_map.set(start_node.id,[0,null]);
-        pq.enqueue([[start_node,0],start_node]); // start node is its own parent. sue me
+        pq.push([[start_node,0],start_node]); // start node is its own parent. sue me
     
-        while (!pq.isEmpty()) {
-            const [top,parent_node] = pq.dequeue()!;
+        while (pq.length > 0) {
+            const [top,parent_node] = pq.pop()!;
             const [curr,_] = top;
             if (visited.has(curr.id)) {
                 continue;
@@ -249,7 +250,7 @@ export class Graph {
                 const new_weight = distance_map.get(curr.id)![0] + neighbor_weight;
                 if (new_weight < distance_map.get(neighbor)![0]) {
                     distance_map.set(neighbor,[new_weight,curr]);
-                    pq.enqueue([[this.getNode(neighbor),neighbor_weight],curr]);
+                    pq.push([[this.getNode(neighbor),neighbor_weight],curr]);
                 }
             }
         }
@@ -315,9 +316,9 @@ export class Graph {
             parent: FLNode;
         };
         const comp = (a:AStarQueueItem , b:AStarQueueItem): number => {
-            return b.f - a.f;
+            return a.f - b.f;
         };
-        const open_set = new PriorityQueue<AStarQueueItem>(comp); // goofy ahhh typing: [[node,weight],parent] (for tracking processing order)
+        const open_set = new TinyQueue<AStarQueueItem>([],comp); 
         const closed_set = new Set<number>();
         const parent = new Map<number,FLNode | null>();
         const g_score = new Map<number,number>();
@@ -335,10 +336,10 @@ export class Graph {
         const heuristic = this.makeHeuristic(end_node.id);
         g_score.set(start_node.id,0);
         f_score.set(start_node.id, heuristic(start_node.id));
-        open_set.enqueue({node_id: start_node.id, g: 0, f: f_score.get(start_node.id)!, parent: start_node});
+        open_set.push({node_id: start_node.id, g: 0, f: f_score.get(start_node.id)!, parent: start_node});
 
-        while (!open_set.isEmpty()) {
-            const curr = open_set.dequeue()!;
+        while (open_set.length > 0) {
+            const curr = open_set.pop()!;
 
             if (closed_set.has(curr.node_id)) {
                 continue;
@@ -365,7 +366,7 @@ export class Graph {
                     g_score.set(neighbor_id, new_g);
                     const f = new_g + heuristic(neighbor_id);
                     f_score.set(neighbor_id, f);
-                    open_set.enqueue({ node_id: neighbor_id, g: new_g, f, parent: this.getNode(curr.node_id)});
+                    open_set.push({ node_id: neighbor_id, g: new_g, f, parent: this.getNode(curr.node_id)});
                 }
             }
         }
