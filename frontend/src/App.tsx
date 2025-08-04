@@ -1,108 +1,107 @@
-import { useState, useRef, useEffect } from 'react'
-import { CSSTransition } from 'react-transition-group'
-import { Stack, Fab, Select, FormControl, TextField, InputLabel, MenuItem, IconButton, Drawer } from '@mui/material'
-import NavigationIcon from '@mui/icons-material/Navigation'
-import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
-import Map from 'react-map-gl/maplibre'
-import 'maplibre-gl/dist/maplibre-gl.css'
-import './App.css'
+import { useState, useRef, useEffect } from "react";
+import { CSSTransition } from "react-transition-group";
+import {
+  Stack,
+  Fab,
+  Select,
+  FormControl,
+  InputLabel,
+  MenuItem,
+  IconButton,
+  Drawer,
+} from "@mui/material";
+import NavigationIcon from "@mui/icons-material/Navigation";
+import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
+import "./App.css";
+import MapOpen from "./components/MapOpen";
 import { Graph } from './Graph.tsx'
 
-function StartScreen({ nodeRef, showStartScreen, handleClick } : { nodeRef:any, showStartScreen:any, handleClick:any }) {
+function StartScreen({
+  nodeRef,
+  showStartScreen,
+  handleClick,
+}: {
+  nodeRef: any;
+  showStartScreen: boolean;
+  handleClick: any;
+}) {
   return (
-    <CSSTransition nodeRef={nodeRef} in={showStartScreen} timeout={400} classNames="fade-transition" unmountOnExit>
+    <CSSTransition
+      nodeRef={nodeRef}
+      in={showStartScreen}
+      timeout={400}
+      classNames="fade-transition"
+      unmountOnExit
+    >
       <div className="start-screen" ref={nodeRef}>
-        <h1>Street Pathfinding Visualizer</h1>
-        <h2 style={{marginTop: '10px'}}>find your shortest path...</h2>
-        <button onClick={handleClick} style={{marginTop: '40px'}}>start</button>
+        <h1>Florida Street Pathfinding Visualizer</h1>
+        <h2 style={{ marginTop: "10px" }}>find your shortest path...</h2>
+        <button onClick={handleClick} style={{ marginTop: "40px" }}>
+          start
+        </button>
       </div>
     </CSSTransition>
-  )
+  );
 }
 
 function MainScreen() {
-  const [algorithm, setAlgorithm] = useState('');
+  const [algorithm, setAlgorithm] = useState("");
   const [open, setOpen] = useState(false);
+  const [pathData, setPathData] = useState(
+    // PLACEHOLDER paths...pass an array of arrays/coordinates into the pathAnimation component
+    [
+      [28.64, -81.78],
+      [27.40, -80.39],
+      [27.32, -81.35]
+    ]
+  );
+  const [playAnim, setPlayAnim] = useState(false);
+  const [pathFinalData, setPathFinalData] = useState(
+    // PLACEHOLDER paths...pass an array of arrays/coordinates into the pathAnimation component
+    [
+      [28.64, -81.78],
+      [27.40, -80.39],
+      [27.32, -81.35]
+    ]
+  );
+  const [playFinalAnim, setPlayFinalAnim] = useState(true);
+  const [startingCoords, setStartingCoords] = useState<[number, number]>([999, 0]);
+  const [endingCoords, setEndingCoords] = useState<[number, number]>([999, 0]);
+  const [data, setData] = useState(null);
+  const [error, setError] = useState(null);
+  const [graph, setGraph] = useState<Graph>();
 
-  const handleChange = (event:any) => {
+  const handleChange = (event: any) => {
     setAlgorithm(event.target.value);
   };
 
   const handleDrawerOpen = () => {
     setOpen(true);
-  }
+  };
   const handleDrawerClose = () => {
     setOpen(false);
-  }
+  };
 
-  const submit = (formData:any) => {
-    const startLocation = formData.get("startLocation")
-    alert(`${startLocation}`)
-    handleDrawerClose()
-  }
-
-  return (
-    <div style={{width: '100vw', height: '100vh'}}>
-      <Map
-        initialViewState={{
-        longitude: -122.4,
-        latitude: 37.8,
-        zoom: 14
-      }}
-        style={{width: '100%', height: '100%'}}
-        mapStyle="https://tiles.openfreemap.org/styles/liberty"
-      />
-      <Fab onClick={handleDrawerOpen} variant="extended" sx={{position: 'absolute', top: 16, left: 16}}>
-        <NavigationIcon sx={{ mr: 1 }}/>
-        Search Path
-      </Fab>
-      <Drawer
-        sx={{
-          width: '20%'
-        }}
-        variant="persistent"
-        anchor="left"
-        open={open}
-      >
-        <IconButton onClick={handleDrawerClose}>
-          <ChevronLeftIcon />
-        </IconButton>
-        <form action={submit}>
-          <Stack spacing={'5vh'} sx={{margin: '40px', maxWidth: '300px'}}>
-            <div className="text-inputs-container">
-              <TextField name="startLocation" label="Starting Location" variant="outlined" fullWidth />
-              <TextField name="endLocation" label="Destination" variant="outlined" margin="normal" fullWidth />
-            </div>
-            <FormControl sx={{ m: 1, minWidth: 150 }}>
-              <InputLabel id="select-algorithm-label">Select Algorithm</InputLabel>
-              <Select
-                labelId="select-algorithm-label"
-                id="select-algorithm"
-                value={algorithm}
-                label="Select Algorithm"
-                onChange={handleChange}
-              >
-                <MenuItem value={'A*-Search'}>A* Search</MenuItem>
-                <MenuItem value={'Breadth-First'}>Breadth-First Search</MenuItem>
-                <MenuItem value={'Depth-First'}>Depth-First Search</MenuItem>
-                <MenuItem value={'Dijkstra'}>Dijkstra's Algorithm</MenuItem>
-              </Select>
-            </FormControl>
-            <Fab type="submit" onClick={submit} variant="extended">
-              <NavigationIcon sx={{ mr: 1 }} />
-              Navigate
-            </Fab>
-          </Stack>
-        </form>
-      </Drawer>
-    </div>
-  )
-}
-
-function App() {
+  const pathfind = () => {
+    if (graph) {
+      if (algorithm == "A*-Search") {
+        const result = graph.pathfindAStar(startingCoords, endingCoords);
+        console.log(result.run_time);
+      }
+    }
+  };
+  
+  const submit = (formData: any) => {
+    if (playAnim) {
+      setPlayAnim(false);
+    }
+    const selectAlgo = formData.get("select-algorithm"); // clearing previous paths will NOT work without this line!!
+    setAlgorithm(selectAlgo);
+    setPlayAnim(true);
+    pathfind();
+  };
   // handling the stupid giant json
-  const [data, setData] = useState(null);
-  const [error, setError] = useState(null);
+
 
   // Code to run the worker and parse JSON on a non-blocking thread
   // FIXME: This needs to be reworked into a flow, I left it here for now but this should update state so it only runs once
@@ -127,33 +126,91 @@ function App() {
   //   console.log("Still waiting...")
   // } else {
   //   const graph = new Graph(data);
+  //   setGraph(graph);
   // }
 
-  const [showStartScreen, setStartScreen] = useState(false)
-  const [showMainScreen, setMainScreen] = useState(false)
-  const nodeRef = useRef(null)
+  return (
+    <div>
+      <MapOpen pathData={pathData} playAnim={playAnim} finalPathData={pathFinalData} playFinalAnim={playFinalAnim} setStartCoords={setStartingCoords} setEndCoords={setEndingCoords} />
+      <Fab
+        onClick={handleDrawerOpen}
+        variant="extended"
+        sx={{ position: "absolute", top: 16, left: 64 }}
+      >
+        <NavigationIcon sx={{ mr: 1 }} />
+        Search Path
+      </Fab>
+      <Drawer
+        sx={{
+          width: "20%",
+        }}
+        variant="persistent"
+        anchor="left"
+        open={open}
+      >
+        <IconButton onClick={handleDrawerClose}>
+          <ChevronLeftIcon />
+        </IconButton>
+        <form action={submit}>
+          <Stack spacing={"5vh"} sx={{ margin: "40px", maxWidth: "300px" }}>
+            <FormControl sx={{ m: 1, minWidth: 220 }}>
+              <InputLabel id="select-algorithm-label">
+                Select Algorithm
+              </InputLabel>
+              <Select
+                name="select-algorithm"
+                labelId="select-algorithm-label"
+                id="select-algorithm"
+                value={algorithm}
+                label="Select Algorithm"
+                onChange={handleChange}
+                required
+              >
+                <MenuItem value={"A*-Search"}>A* Search</MenuItem>
+                <MenuItem value={"Breadth-First"}>
+                  Breadth-First Search
+                </MenuItem>
+                <MenuItem value={"Depth-First"}>Depth-First Search</MenuItem>
+                <MenuItem value={"Dijkstra"}>Dijkstra's Algorithm</MenuItem>
+              </Select>
+            </FormControl>
+            <Fab type="submit" onClick={submit} variant="extended">
+              <NavigationIcon sx={{ mr: 1 }} />
+              Navigate
+            </Fab>
+          </Stack>
+        </form>
+      </Drawer>
+    </div>
+  );
+}
+
+function App() {
+  const [showStartScreen, setStartScreen] = useState(false);
+  const [showMainScreen, setMainScreen] = useState(false);
+  const nodeRef = useRef(null);
 
   useEffect(() => {
     setTimeout(() => setStartScreen(true), 800); // executes once to setup start screen (allows enter transition to play)
-  }, [])
+  }, []);
 
   const handleClick = () => {
-    setStartScreen(false)
-    setTimeout(() => {setMainScreen(true)}, 800) // delays rendering the main screen until after the start screen transitions
-  }
+    setStartScreen(false);
+    setTimeout(() => {
+      setMainScreen(true);
+    }, 800); // delays rendering the main screen until after the start screen transitions
+  };
 
   return (
     <>
       <StartScreen
-        nodeRef = {nodeRef}
-        showStartScreen = {showStartScreen}
-        handleClick = {handleClick}
+        nodeRef={nodeRef}
+        showStartScreen={showStartScreen}
+        handleClick={handleClick}
       />
-      {showMainScreen &&
-        <MainScreen />
-      }
+      {showMainScreen && <MainScreen />}
     </>
-  )
+  );
 }
 
-export default App
+export default App;

@@ -13,6 +13,8 @@ frontend/dist
 frontend/dist-ssr
 frontend/*.local
 
+frontend/public/FL-roads.json
+
 # Editor directories and files
 frontend/.vscode/*
 frontend/!.vscode/extensions.json
