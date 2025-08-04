@@ -16,36 +16,30 @@ import "./App.css";
 import MapOpen from "./components/MapOpen";
 import { Graph } from './Graph.tsx'
 
-function StartScreen({
+function LoadingScreen({
   nodeRef,
-  showStartScreen,
-  handleClick,
+  showLoadingScreen
 }: {
   nodeRef: any;
-  showStartScreen: boolean;
-  handleClick: any;
+  showLoadingScreen: boolean;
 }) {
   return (
     <CSSTransition
       nodeRef={nodeRef}
-      in={showStartScreen}
+      in={showLoadingScreen}
       timeout={400}
       classNames="fade-transition"
       unmountOnExit
     >
       <div className="start-screen" ref={nodeRef}>
         <h1>Florida Street Pathfinding Visualizer</h1>
-        <h2 style={{ marginTop: "10px" }}>find your shortest path...</h2>
-        <button onClick={handleClick} style={{ marginTop: "40px" }}>
-          start
-        </button>
+        <h2 style={{ marginTop: "10px" }}>loading...</h2>
       </div>
     </CSSTransition>
   );
 }
 
-function MainScreen(graph : Graph) {
-  const [algorithm, setAlgorithm] = useState("");
+function MainScreen({ buttonClick, setButtonClick, setAlgorithm, setStartingCoords, setEndingCoords, algorithm } : { buttonClick: boolean, setButtonClick: any, setAlgorithm : any, setStartingCoords : any, setEndingCoords : any, algorithm: any }) {
   const [open, setOpen] = useState(false);
   const [pathData, setPathData] = useState(
     // PLACEHOLDER paths...pass an array of arrays/coordinates into the pathAnimation component
@@ -65,8 +59,6 @@ function MainScreen(graph : Graph) {
     ]
   );
   const [playFinalAnim, setPlayFinalAnim] = useState(true);
-  const [startingCoords, setStartingCoords] = useState<[number, number]>([999, 0]);
-  const [endingCoords, setEndingCoords] = useState<[number, number]>([999, 0]);
 
   const handleChange = (event: any) => {
     setAlgorithm(event.target.value);
@@ -78,22 +70,17 @@ function MainScreen(graph : Graph) {
   const handleDrawerClose = () => {
     setOpen(false);
   };
-
-  const pathfind = () => {
-    if (graph) {
-      const result = graph.pathfindBFS(startingCoords, endingCoords);
-      console.log(result.run_time);
-    }
-  };
-  
-  const submit = (formData: any) => {
+    
+  const submit = (formData : any) => {
     if (playAnim) {
       setPlayAnim(false);
     }
-    const selectAlgo = formData.get("select-algorithm"); // clearing previous paths will NOT work without this line!!
-    setAlgorithm(selectAlgo);
-    setPlayAnim(true);
-    pathfind();
+    if (formData.get) {
+      const selectAlgo = formData.get("select-algorithm"); // clearing previous paths will NOT work without this line!!
+      setAlgorithm(selectAlgo);
+      setPlayAnim(true);
+      setButtonClick(!buttonClick);
+    }
   };
 
   return (
@@ -153,23 +140,24 @@ function MainScreen(graph : Graph) {
 }
 
 function App() {
-  const [showStartScreen, setStartScreen] = useState(false);
+  const [algorithm, setAlgorithm] = useState("");
+  const [showLoadingScreen, setLoadingScreen] = useState(false);
   const [showMainScreen, setMainScreen] = useState(false);
+  const [startingCoords, setStartingCoords] = useState<[number, number]>([999, 0]);
+  const [endingCoords, setEndingCoords] = useState<[number, number]>([999, 0]);
+  const [buttonClick, setButtonClick] = useState(false);
   const nodeRef = useRef(null);
   const [data, setData] = useState(null);
   const [error, setError] = useState(null);
-  const [graph, setGraph] = useState<Graph>();
+  let graphData : Graph;
+  const [processOrder, setProcessOrder] = useState();
+  const [path, setPath] = useState();
+  const [runtime, setRuntime] = useState(); 
+  const [weight, setWeight] = useState();
 
   useEffect(() => {
-    setTimeout(() => setStartScreen(true), 800); // executes once to setup start screen (allows enter transition to play)
+    setTimeout(() => setLoadingScreen(true), 800); // executes once to setup loading screen (allows enter transition to play)
   }, []);
-
-  const handleClick = () => {
-    setStartScreen(false);
-    setTimeout(() => {
-      setMainScreen(true);
-    }, 800); // delays rendering the main screen until after the start screen transitions
-  };
 
   // handling the stupid giant json
 
@@ -194,22 +182,36 @@ function App() {
 
   useEffect(() => {
     if (!data) {
-      console.log("Still waiting...")
+      console.log("Still waiting...");
     } else {
-      const graph = new Graph(data);
-      setGraph(graph);
-      console.log(graph.getNodes());
+      graphData = new Graph(data);
+      if (graphData) {
+        console.log(graphData); //testing
+        console.log(graphData.pathfindAStar([29.59, -82.80], [28.31, -81.53])); //testing
+        setLoadingScreen(false);
+        setTimeout(() => {
+          setMainScreen(true);
+        }, 800); // delays rendering the main screen until after the loading screen transitions
+      }
     }
   }, [data]);
 
+  useEffect(() => {
+    console.log(graphData);
+    if (graphData) {
+      if (algorithm == "A*-Search") {
+        console.log("ready!");
+      }
+    }
+    else {
+      console.log("why wont this load..??");
+    }
+  }, [buttonClick]);
+
   return (
     <>
-      <StartScreen
-        nodeRef={nodeRef}
-        showStartScreen={showStartScreen}
-        handleClick={handleClick}
-      />
-      {showMainScreen && <MainScreen graphData={graph} />}
+      <LoadingScreen nodeRef={nodeRef} showLoadingScreen={showLoadingScreen} />
+      {showMainScreen && <MainScreen buttonClick={buttonClick} setButtonClick={setButtonClick} algorithm={algorithm} setAlgorithm={setAlgorithm} setStartingCoords={setStartingCoords} setEndingCoords={setEndingCoords} />}
     </>
   );
 }

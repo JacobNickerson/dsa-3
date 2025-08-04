@@ -123,8 +123,8 @@ function MapOpen({
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
         <PinMarker onSelectA={setSelectedA} onSelectB={setSelectedB} />
-        <PathAnimation playAnim={playAnim} nodes={pathData} /> // Animates edges in processed order
-        <PathAnimation playAnim={playFinalAnim} nodes={finalPathData} /> // Animates the final route only
+        <PathAnimation playAnim={playAnim} nodes={pathData} />
+        <PathAnimation playAnim={playFinalAnim} nodes={finalPathData} />
       </MapContainer>
     </div>
   );

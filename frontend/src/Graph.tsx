@@ -368,8 +368,4 @@ export class Graph {
 
         return { processing_order, path, run_time, total_weight };
     }
-
-    getNodes(): Map<number,FLNode> {
-        return this.nodes;
-    }
 };
