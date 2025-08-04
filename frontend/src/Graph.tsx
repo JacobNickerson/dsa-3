@@ -1,0 +1,90 @@
+import { PriorityQueue,Queue } from 'typescript-collections';
+
+
+type FLNode = {
+    id: number,
+    lat: number,
+    lon: number
+};
+
+type FLEdge = {
+    distance: number,
+    source: number,
+    target: number,
+    travel_time: number
+};
+
+export interface BigFatFile {
+    nodes: Array<FLNode>,
+    edges: Array<FLEdge>
+};
+
+type PathfindResult = {
+    processing_order: Array<[FLNode,FLNode]>, 
+    path: Array<FLNode>,
+    run_time: number
+};
+
+function squaredDistance(source: [number,number], target: [number,number]) {
+   const dx = target[0] - source[0]; 
+   const dy = target[1] - source[1];
+   return dx*dx+dy*dy;
+}
+
+export class Graph {
+    private adjacencyList: Map<number, Set<[number,number]>>;
+    private nodes: Map<number,FLNode>;
+
+    constructor(input: BigFatFile) {
+        this.adjacencyList = new Map();
+        this.nodes = new Map();
+        for (const vertex of input.nodes) {
+            this.addVertex(vertex);
+        }
+        for (const edge of input.edges) {
+            this.addEdge(edge);
+        }
+    }
+
+    private addVertex(vertex: FLNode): void {
+        if (!this.adjacencyList.has(vertex.id)) {
+            this.adjacencyList.set(vertex.id, new Set());
+        }
+        if (!this.nodes.has(vertex.id)) {
+            this.nodes.set(vertex.id,vertex);
+        }
+    }
+
+    private addEdge(edge: FLEdge): void {
+        this.adjacencyList.get(edge.source)!.add([edge.target,edge.travel_time]);
+    }
+
+    private getNeighbors(vertex: FLNode): Set<[number,number]> | undefined {
+        return this.adjacencyList.get(vertex.id);
+    }
+
+    private findClosestNodes(start: [number,number], end: [number,number]): [FLNode,FLNode] {
+        let start_dist = Number.MAX_VALUE;
+        let nearest_start = null;
+        let end_dist = Number.MAX_VALUE;
+        let nearest_end = null;
+        for (const [_,node] of this.nodes) {
+            const dstart = squaredDistance(start,[node.lat,node.lon]);
+            if (dstart < start_dist) {
+                start_dist = dstart;
+                nearest_start = node;
+            } 
+            const dend = squaredDistance(end,[node.lat,node.lon]);
+            if (dend < end_dist) {
+                end_dist = dend;
+                nearest_end = node;
+            } 
+        }
+        return [nearest_start!,nearest_end!]; // hopefully its not null ;)
+    }
+
+    private getNode(id: number): FLNode {
+        return this.nodes.get(id)!;
+    }
+
+};
