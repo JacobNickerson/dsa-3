@@ -7,7 +7,7 @@ type FLNode = {
     lon: number
 };
 
-type FLEdge = {
+interface FLEdge {
     distance: number,
     source: number,
     target: number,
