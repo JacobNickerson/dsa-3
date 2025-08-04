@@ -5,12 +5,12 @@ import {
   useMapEvents,
   Marker,
   Popup,
-  useMap,
 } from "react-leaflet";
 import L from "leaflet";
 import { LatLng } from "leaflet";
 import { useEffect, useRef, useState } from "react";
 import { BorderColor } from "@mui/icons-material";
+import PathAnimation from "./PathAnimation";
 //import "bootstrap/dist/css/bootstrap.css";
 
 function PinMarker() {
@@ -44,14 +44,14 @@ function PinMarker() {
   );
 }
 
-function MapOpen() {
-  // Map bounds
-  //const corner1 = Leaflet.latLng(-90, -200);
-  //const corner2 = Leaflet.latLng(90, 200);
-  //const bounds = Leaflet.latLngBounds(corner1, corner2);
-
+function MapOpen({
+  pathData,
+  playAnim,
+}: {
+  pathData: number[][];
+  playAnim: boolean;
+}) {
   //florida attempt
-
   const corner1 = Leaflet.latLng(24, -88);
   const corner2 = Leaflet.latLng(31, -77);
   const bounds = Leaflet.latLngBounds(corner1, corner2);
@@ -72,6 +72,7 @@ function MapOpen() {
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
         <PinMarker />
+        <PathAnimation playAnim={playAnim} nodes={pathData} />
       </MapContainer>
     </div>
   );
