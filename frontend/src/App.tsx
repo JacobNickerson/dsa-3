@@ -5,7 +5,6 @@ import {
   Fab,
   Select,
   FormControl,
-  TextField,
   InputLabel,
   MenuItem,
   IconButton,
@@ -15,6 +14,7 @@ import NavigationIcon from "@mui/icons-material/Navigation";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import "./App.css";
 import MapOpen from "./components/MapOpen";
+import { Graph } from './Graph.tsx'
 
 function StartScreen({
   nodeRef,
@@ -22,7 +22,7 @@ function StartScreen({
   handleClick,
 }: {
   nodeRef: any;
-  showStartScreen: any;
+  showStartScreen: boolean;
   handleClick: any;
 }) {
   return (
@@ -50,14 +50,26 @@ function MainScreen() {
   const [pathData, setPathData] = useState(
     // PLACEHOLDER paths...pass an array of arrays/coordinates into the pathAnimation component
     [
-      [51, 52],
-      [53, 54],
-      [59, 50],
-      [59.21, 45.61],
-      [40, 40],
+      [28.64, -81.78],
+      [27.40, -80.39],
+      [27.32, -81.35]
     ]
   );
-  const [playAnim, setPlayAnim] = useState(true);
+  const [playAnim, setPlayAnim] = useState(false);
+  const [pathFinalData, setPathFinalData] = useState(
+    // PLACEHOLDER paths...pass an array of arrays/coordinates into the pathAnimation component
+    [
+      [28.64, -81.78],
+      [27.40, -80.39],
+      [27.32, -81.35]
+    ]
+  );
+  const [playFinalAnim, setPlayFinalAnim] = useState(true);
+  const [startingCoords, setStartingCoords] = useState<[number, number]>([999, 0]);
+  const [endingCoords, setEndingCoords] = useState<[number, number]>([999, 0]);
+  const [data, setData] = useState(null);
+  const [error, setError] = useState(null);
+  const [graph, setGraph] = useState<Graph>();
 
   const handleChange = (event: any) => {
     setAlgorithm(event.target.value);
@@ -70,25 +82,56 @@ function MainScreen() {
     setOpen(false);
   };
 
+  const pathfind = () => {
+    if (graph) {
+      if (algorithm == "A*-Search") {
+        const result = graph.pathfindAStar(startingCoords, endingCoords);
+        console.log(result.run_time);
+      }
+    }
+  };
+  
   const submit = (formData: any) => {
     if (playAnim) {
       setPlayAnim(false);
     }
-    const startLocation = formData.get("startLocation");
-    alert(`${startLocation}`);
-    handleDrawerClose();
-    setPathData([
-      [60, 63],
-      [66, 69],
-      [49, 51],
-    ]); // PLACEHOLDER
+    const selectAlgo = formData.get("select-algorithm"); // clearing previous paths will NOT work without this line!!
+    setAlgorithm(selectAlgo);
     setPlayAnim(true);
+    pathfind();
   };
+  // handling the stupid giant json
+
+
+  // Code to run the worker and parse JSON on a non-blocking thread
+  // FIXME: This needs to be reworked into a flow, I left it here for now but this should update state so it only runs once
+  //        and path finding can only be performed after it's done parsing
+  // useEffect(() => {
+  //   const worker = new Worker(new URL('./bffWorker.tsx', import.meta.url));
+  //   worker.onmessage = (e) => {
+  //     const { ok, data, error } = e.data;
+  //     if (ok) setData(data);
+  //     else setError(error);
+  //   };
+
+  //   fetch('/FL-roads.json')
+  //     .then(res => res.text())
+  //     .then(text => worker.postMessage(text))
+  //     .catch(err => setError(err.message));
+
+  //   return () => worker.terminate();
+  // }, []);
+
+  // if (!data) {
+  //   console.log("Still waiting...")
+  // } else {
+  //   const graph = new Graph(data);
+  //   setGraph(graph);
+  // }
 
   return (
     <div>
-      <MapOpen pathData={pathData} playAnim={playAnim} />
-
+      <MapOpen pathData={pathData} playAnim={playAnim} finalPathData={pathFinalData} playFinalAnim={playFinalAnim} setStartCoords={setStartingCoords} setEndCoords={setEndingCoords} />
       <Fab
         onClick={handleDrawerOpen}
         variant="extended"
@@ -110,28 +153,12 @@ function MainScreen() {
         </IconButton>
         <form action={submit}>
           <Stack spacing={"5vh"} sx={{ margin: "40px", maxWidth: "300px" }}>
-            <div className="text-inputs-container">
-              <TextField
-                name="startLocation{}"
-                label="Starting Location"
-                variant="outlined"
-                fullWidth
-                required
-              />
-              <TextField
-                name="endLocation"
-                label="Destination"
-                variant="outlined"
-                margin="normal"
-                fullWidth
-                required
-              />
-            </div>
-            <FormControl sx={{ m: 1, minWidth: 150 }}>
+            <FormControl sx={{ m: 1, minWidth: 220 }}>
               <InputLabel id="select-algorithm-label">
                 Select Algorithm
               </InputLabel>
               <Select
+                name="select-algorithm"
                 labelId="select-algorithm-label"
                 id="select-algorithm"
                 value={algorithm}

@@ -13,6 +13,8 @@ frontend/dist
 frontend/dist-ssr
 frontend/*.local
 
+frontend/public/FL-roads.json
+
 # Editor directories and files
 frontend/.vscode/*
 frontend/!.vscode/extensions.json
@@ -23,3 +25,7 @@ frontend/*.ntvs*
 frontend/*.njsproj
 frontend/*.sln
 frontend/*.sw?
+frontend/public/FL-roads.json
+
+*/.venv
+.venv
