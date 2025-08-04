@@ -47,6 +47,29 @@ function PinMarker() {
   );
 }
 
+function LocationDisplay({
+  selectedA,
+  selectedB,
+}: {
+  selectedA: LatLng;
+  selectedB: LatLng;
+}) {
+  return (
+    <>
+      <label>
+        Location A:
+        <textarea value={selectedA.lat}></textarea>
+        <textarea value={selectedA.lng}></textarea>
+      </label>
+      <label>
+        Location A:
+        <textarea value={selectedB.lat}></textarea>
+        <textarea value={selectedB.lng}></textarea>
+      </label>
+    </>
+  );
+}
+
 function MapOpen({
   pathData,
   playAnim,

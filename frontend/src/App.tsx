@@ -74,8 +74,8 @@ function MainScreen() {
     if (playAnim) {
       setPlayAnim(false);
     }
-    const startLocation = formData.get("startLocation");
-    alert(`${startLocation}`);
+    // const startLocation = formData.get("startLocation");
+    //alert(`${startLocation}`);
     handleDrawerClose();
     setPathData([
       [60, 63],
@@ -110,23 +110,6 @@ function MainScreen() {
         </IconButton>
         <form action={submit}>
           <Stack spacing={"5vh"} sx={{ margin: "40px", maxWidth: "300px" }}>
-            <div className="text-inputs-container">
-              <TextField
-                name="startLocation{}"
-                label="Starting Location"
-                variant="outlined"
-                fullWidth
-                required
-              />
-              <TextField
-                name="endLocation"
-                label="Destination"
-                variant="outlined"
-                margin="normal"
-                fullWidth
-                required
-              />
-            </div>
             <FormControl sx={{ m: 1, minWidth: 150 }}>
               <InputLabel id="select-algorithm-label">
                 Select Algorithm
