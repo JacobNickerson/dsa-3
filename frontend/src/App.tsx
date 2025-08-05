@@ -239,6 +239,8 @@ function App() {
         }
       }
       if (!result) { return; }
+      const message = "Pathfinding Runtime: " + result.run_time + "ms"; 
+      alert(message);
       setPathData(result.path);
       setSearchOrder(result.processing_order);
     }
