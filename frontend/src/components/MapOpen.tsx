@@ -9,7 +9,7 @@ import {
 import { LatLng } from "leaflet";
 import { useEffect, useRef, useState } from "react";
 import { BorderColor } from "@mui/icons-material";
-import { DrawFinalPath, DrawSearchOrder } from "./PathAnimation";
+import { DrawSearch } from "./PathAnimation";
 import icon from "leaflet/dist/images/marker-icon.png";
 import type { FLNode } from "../Graph"
 //import "bootstrap/dist/css/bootstrap.css";
@@ -130,8 +130,7 @@ function MapOpen({
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
         <PinMarker onSelectA={setSelectedA} onSelectB={setSelectedB} />
-        <DrawFinalPath playAnim={playAnim} edges={pathData} />
-        <DrawSearchOrder playAnim={playSearchAnim} edges={searchOrder} />
+        <DrawSearch playPathAnim={playAnim} pathEdges={pathData} playSearchAnim={playSearchAnim} searchOrder={searchOrder}/>
       </MapContainer>
     </div>
   );
